@@ -1,0 +1,97 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class M_nilai extends CI_Model {
+	public function select_all_nilai() {
+		$sql = "SELECT * FROM nilai";
+
+		$data = $this->db->query($sql);
+
+		return $data->result();
+	}
+
+	public function select_all() {
+		$sql = "SELECT nilai.id AS id, user.nama AS user, kuis.nama AS kuis, nilai.jawaban AS jawaban, nilai.hasil AS hasil FROM nilai, user, kuis WHERE nilai.user_id = user.id AND nilai.kuis_id = kuis.id";
+		$data = $this->db->query($sql);
+
+		return $data->result();
+	}
+	// public function select_all() {
+	// 	$sql = " SELECT nilai.id AS id, nilai.user_id AS nilai, nilai.kuis_id AS user_id, kuis.nama AS kuis, level.nama AS level, soal.isi AS soal FROM nilai, kuis, level, soal WHERE nilai.id_level = level.id AND nilai.id_soal = soal.id AND nilai.kuis_id = kuis.id";
+
+	// 	$data = $this->db->query($sql);
+
+	// 	return $data->result();
+	// }
+
+	public function select_by_id($id) {
+		$sql = "SELECT nilai.id AS id_nilai, nilai.user_id AS nama_nilai, nilai.kuis_id, nilai.id_level, nilai.id_soal, nilai.kuis_id AS user_id, kuis.nama AS kuis, level.nama AS level, soal.isi AS soal FROM nilai, kuis, level, soal WHERE nilai.kuis_id = kuis.id AND nilai.id_level = level.id AND nilai.id_soal = soal.id AND nilai.id = '{$id}'";
+
+		$data = $this->db->query($sql);
+
+		return $data->row();
+	}
+
+	public function select_by_soal($id) {
+		$sql = "SELECT COUNT(*) AS jml FROM nilai WHERE id_soal = {$id}";
+
+		$data = $this->db->query($sql);
+
+		return $data->row();
+	}
+
+	public function select_by_kuis($id) {
+		$sql = "SELECT COUNT(*) AS jml FROM nilai WHERE kuis_id = {$id}";
+
+		$data = $this->db->query($sql);
+
+		return $data->row();
+	}
+
+	public function update($data) {
+		$sql = "UPDATE nilai SET hasil = '" .$data['hasil'] ."', jawaban = '" .$data['jawaban'] ."', kuis_id = '" .$data['kuis'] ."', user_id = '" .$data['user'] ."' WHERE id '" .$data['id'] ."'";
+
+		$this->db->query($sql);
+
+		return $this->db->affected_rows();
+	}
+
+	public function delete($id) {
+		$sql = "DELETE FROM nilai WHERE id='" .$id ."'";
+
+		$this->db->query($sql);
+
+		return $this->db->affected_rows();
+	}
+
+	public function insert($data) {
+		$id = md5(DATE('ymdhms').rand());
+		$sql = "INSERT INTO nilai VALUES('{$id}','" .$data['nama'] ."','" .$data['user_id'] ."'," .$data['kuis'] ."," .$data['jk'] ."," .$data['soal'] .",1)";
+
+		$this->db->query($sql);
+
+		return $this->db->affected_rows();
+	}
+
+	public function insert_batch($data) {
+		$this->db->insert_batch('nilai', $data);
+		
+		return $this->db->affected_rows();
+	}
+
+	public function check_nama($nama) {
+		$this->db->where('nama', $nama);
+		$data = $this->db->get('nilai');
+
+		return $data->num_rows();
+	}
+
+	public function total_rows() {
+		$data = $this->db->get('nilai');
+
+		return $data->num_rows();
+	}
+}
+
+/* End of file M_nilai.php */
+/* Location: ./application/models/M_nilai.php */
